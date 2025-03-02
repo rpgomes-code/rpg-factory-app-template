@@ -1,9 +1,7 @@
 import Stripe from 'stripe';
 
 // Initialize Stripe with the API key from environment variables
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-    apiVersion: '2023-10-16', // Specify the Stripe API version
-});
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
 
 // Create payment intent for a specified amount
 export async function createPaymentIntent(
@@ -35,13 +33,11 @@ export async function createCustomer(
     metadata?: Record<string, string>
 ) {
     try {
-        const customer = await stripe.customers.create({
+        return await stripe.customers.create({
             email,
             name,
             metadata,
         });
-
-        return customer;
     } catch (error) {
         console.error('Stripe Create Customer Error:', error);
         throw error;
@@ -55,15 +51,13 @@ export async function createSubscription(
     metadata?: Record<string, string>
 ) {
     try {
-        const subscription = await stripe.subscriptions.create({
+        return await stripe.subscriptions.create({
             customer: customerId,
-            items: [{ price: priceId }],
+            items: [{price: priceId}],
             metadata,
             payment_behavior: 'default_incomplete',
             expand: ['latest_invoice.payment_intent'],
         });
-
-        return subscription;
     } catch (error) {
         console.error('Stripe Create Subscription Error:', error);
         throw error;
@@ -73,8 +67,7 @@ export async function createSubscription(
 // Retrieve a subscription
 export async function getSubscription(subscriptionId: string) {
     try {
-        const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-        return subscription;
+        return await stripe.subscriptions.retrieve(subscriptionId);
     } catch (error) {
         console.error('Stripe Get Subscription Error:', error);
         throw error;
@@ -84,8 +77,7 @@ export async function getSubscription(subscriptionId: string) {
 // Cancel a subscription
 export async function cancelSubscription(subscriptionId: string) {
     try {
-        const subscription = await stripe.subscriptions.cancel(subscriptionId);
-        return subscription;
+        return await stripe.subscriptions.cancel(subscriptionId);
     } catch (error) {
         console.error('Stripe Cancel Subscription Error:', error);
         throw error;

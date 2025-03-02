@@ -4,15 +4,13 @@ import { Redis } from 'ioredis';
 const isProduction = process.env.NODE_ENV === 'production';
 
 // Configure Redis client based on environment
-const redisClient = new Redis(
-    isProduction
-        ? {
-            host: process.env.REDIS_HOST || 'redis',
-            port: parseInt(process.env.REDIS_PORT || '6379'),
-            password: process.env.REDIS_PASSWORD,
-        }
-        : process.env.REDIS_URL || 'redis://localhost:6379'
-);
+const redisClient = isProduction
+    ? new Redis({
+        host: process.env.REDIS_HOST || 'redis',
+        port: parseInt(process.env.REDIS_PORT || '6379'),
+        password: process.env.REDIS_PASSWORD,
+    })
+    : new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
 
 redisClient.on('error', (err) => {
     console.error('Redis Client Error:', err);

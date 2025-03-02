@@ -30,7 +30,7 @@ export const authConfig: NextAuthConfig = {
                     return null;
                 }
 
-                const isPasswordValid = compareSync(credentials.password, user.password);
+                const isPasswordValid = compareSync(credentials.password as string, user.password as string);
 
                 if (!isPasswordValid) {
                     return null;
@@ -43,7 +43,7 @@ export const authConfig: NextAuthConfig = {
                 };
             },
         }),
-        // Add more providers here as needed
+        // Add more providers here as necessary
         // GoogleProvider({
         //   clientId: process.env.GOOGLE_CLIENT_ID,
         //   clientSecret: process.env.GOOGLE_CLIENT_SECRET,

@@ -9,6 +9,7 @@ import ProfileForm from "@/components/settings/profile-form";
 import AccountForm from "@/components/settings/account-form";
 import NotificationsForm from "@/components/settings/notifications-form";
 import AppearanceForm from "@/components/settings/appearance-form";
+import Link from "next/link";
 
 export const metadata = {
     title: "Settings | NextJS Template",
@@ -144,7 +145,7 @@ export default async function SettingsPage() {
                                                 className="w-full"
                                                 asChild
                                             >
-                                                <a href="/api/auth/signout">Sign out</a>
+                                                <Link href="/api/auth/signout">Sign out</Link>
                                             </Button>
                                         </div>
                                     </CardContent>
@@ -178,10 +179,10 @@ export default async function SettingsPage() {
                                     </CardHeader>
                                     <CardContent>
                                         <TabsContent value="profile">
-                                            <ProfileForm user={session.user} />
+                                            <ProfileForm user={session.user ?? null} />
                                         </TabsContent>
                                         <TabsContent value="account">
-                                            <AccountForm user={session.user} />
+                                            <AccountForm user={session.user ?? null} />
                                         </TabsContent>
                                         <TabsContent value="notifications">
                                             <NotificationsForm />
