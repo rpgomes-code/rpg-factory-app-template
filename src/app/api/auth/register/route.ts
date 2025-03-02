@@ -1,3 +1,4 @@
+// src/app/api/auth/register/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { hash } from "bcrypt";
@@ -47,7 +48,8 @@ export async function POST(request: NextRequest) {
         });
 
         // Remove password from response
-        const { password: _, ...userWithoutPassword } = user;
+        // Fix: Use rest pattern without assigning to _ variable
+        const { password: passwordField, ...userWithoutPassword } = user;
 
         logger.info(`User registered successfully: ${email}`);
 

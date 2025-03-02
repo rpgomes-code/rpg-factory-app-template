@@ -1,3 +1,4 @@
+// src/components/settings/account-form.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -24,6 +25,8 @@ export default function AccountForm({ user }: AccountFormProps) {
     const [confirmPassword, setConfirmPassword] = useState("");
     const router = useRouter();
     const { toast } = useToast();
+
+    const userEmail = user?.email || ""; // Use the user prop
 
     const handlePasswordChange = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -70,6 +73,7 @@ export default function AccountForm({ user }: AccountFormProps) {
                     <CardTitle>Change Password</CardTitle>
                     <CardDescription>
                         Update your password to keep your account secure.
+                        {userEmail && <span className="block mt-1">Current email: {userEmail}</span>}
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
