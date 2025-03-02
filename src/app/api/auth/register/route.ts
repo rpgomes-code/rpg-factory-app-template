@@ -47,9 +47,8 @@ export async function POST(request: NextRequest) {
             },
         });
 
-        // Remove password from response
-        // Fix: Use rest pattern without assigning to _ variable
-        const { password: passwordField, ...userWithoutPassword } = user;
+        // Remove password from response - a fixed version
+        const { password, ...userWithoutPassword } = user;
 
         logger.info(`User registered successfully: ${email}`);
 
