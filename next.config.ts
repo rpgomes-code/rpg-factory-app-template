@@ -34,6 +34,14 @@ const nextConfig: NextConfig = {
                 zlib: false,
                 stream: false,
                 path: false,
+
+                // Add this mocks for node-pre-gyp (used by bcrypt)
+                'mock-aws-s3': false,
+                'aws-sdk': false,
+                'nock': false,
+
+                // Explicitly mock bcrypt for client-side
+                'bcrypt': false
             };
         }
         return config;

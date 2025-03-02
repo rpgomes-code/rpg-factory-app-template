@@ -3,6 +3,7 @@ import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@/lib/db";
+import {verifyPassword} from "@/lib/auth/server-utils";
 
 export const authConfig: NextAuthConfig = {
     adapter: PrismaAdapter(db),
@@ -14,9 +15,7 @@ export const authConfig: NextAuthConfig = {
                 password: { label: "Password", type: "password" },
             },
             async authorize(credentials) {
-                // Don't validate credentials here, we already did in the API
-                // Just fetch the user
-                if (!credentials?.email) {
+                if (!credentials?.email || !credentials?.password) {
                     return null;
                 }
 
@@ -26,7 +25,13 @@ export const authConfig: NextAuthConfig = {
                     },
                 });
 
-                if (!user) {
+                if (!user || !user.password) {
+                    return null;
+                }
+
+                const passwordValid = await verifyPassword(credentials.password.toString(), user.password);
+
+                if (!passwordValid) {
                     return null;
                 }
 
@@ -37,12 +42,6 @@ export const authConfig: NextAuthConfig = {
                 };
             },
         }),
-        // Other providers...
-        // Add more providers here as necessary
-        // GoogleProvider({
-        //   clientId: process.env.GOOGLE_CLIENT_ID,
-        //   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        // }),
     ],
     session: {
         strategy: "jwt",
@@ -51,8 +50,6 @@ export const authConfig: NextAuthConfig = {
         signIn: "/auth/signin",
         signOut: "/auth/signout",
         error: "/auth/error",
-        verifyRequest: "/auth/verify-request",
-        newUser: "/auth/new-user",
     },
     callbacks: {
         async session({ session, token }) {

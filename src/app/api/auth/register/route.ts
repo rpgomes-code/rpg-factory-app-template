@@ -1,7 +1,7 @@
 // src/app/api/auth/register/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { hash } from "bcrypt";
+import { hashPassword } from "@/lib/auth/server-utils";
 import logger from "@/lib/logger";
 
 export async function POST(request: NextRequest) {
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Hash password
-        const hashedPassword = await hash(password, 10);
+        const hashedPassword = await hashPassword(password);
 
         // Create user
         const user = await db.user.create({

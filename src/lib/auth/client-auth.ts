@@ -3,19 +3,12 @@
 
 import { signIn as nextAuthSignIn, signOut as nextAuthSignOut } from "next-auth/react";
 
-interface SignInOptions extends Record<string, unknown> {
-    callbackUrl?: string;
-    redirect?: boolean;
-    email?: string;
-    password?: string;
-}
-
 interface SignOutOptions {
     callbackUrl?: string;
     redirect?: boolean;
 }
 
-export const signIn = async (provider: string, options?: SignInOptions) => {
+export const signIn = async (provider: string, options?: Parameters<typeof nextAuthSignIn>[1]) => {
     return nextAuthSignIn(provider, options);
 };
 
