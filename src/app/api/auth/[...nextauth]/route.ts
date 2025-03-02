@@ -1,10 +1,7 @@
-import { NextRequest } from "next/server";
+// src/app/api/auth/[...nextauth]/route.ts
 import { auth } from "@/lib/auth/server-auth";
 
-export async function GET(request: NextRequest) {
-    return await auth.handleRequest(request);
-}
+// Export the auth handlers directly
+export const GET = auth;
 
-export async function POST(request: NextRequest) {
-    return await auth.handleRequest(request);
-}
+export const POST = auth;

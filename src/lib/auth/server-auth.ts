@@ -1,3 +1,4 @@
+// src/lib/auth/server-auth.ts
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@/lib/db";
@@ -28,7 +29,7 @@ export const auth = NextAuth({
                     return null;
                 }
 
-                const passwordValid = await compare(credentials.password as string, user.password as string);
+                const passwordValid = await compare(credentials.password as string, user.password);
 
                 if (!passwordValid) {
                     return null;
@@ -41,7 +42,6 @@ export const auth = NextAuth({
                 };
             },
         }),
-        // Add other providers here
     ],
     pages: {
         signIn: "/auth/signin",
@@ -64,9 +64,8 @@ export const auth = NextAuth({
     },
 });
 
-export const {
-    handlers: { GET, POST },
-    auth: getServerSession,
-    signIn,
-    signOut,
-} = auth;
+// For server components to get the session
+export const getServerSession = auth;
+
+// For direct sign in/out operations
+export const { signIn, signOut } = auth;
