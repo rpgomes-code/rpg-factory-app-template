@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signIn } from "@/lib/auth/auth";
+import { signIn } from "@/lib/auth/client-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FormLabel as Label } from "@/components/ui/form";
@@ -28,13 +28,7 @@ export default function SignInForm() {
             });
 
             if (result?.error) {
-                toast({
-                    title: "Error",
-                    description: "Invalid email or password",
-                    variant: "destructive",
-                });
-                setIsLoading(false);
-                return;
+                throw new Error(result.error);
             }
 
             toast({
@@ -48,7 +42,7 @@ export default function SignInForm() {
             console.error("Sign in error:", error);
             toast({
                 title: "Error",
-                description: "Something went wrong. Please try again.",
+                description: "Invalid email or password",
                 variant: "destructive",
             });
         } finally {

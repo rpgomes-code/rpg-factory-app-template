@@ -3,13 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FadeIn } from "@/components/ui/motion";
-import { auth } from "@/lib/auth/auth";
 import { redirect } from "next/navigation";
 import ProfileForm from "@/components/settings/profile-form";
 import AccountForm from "@/components/settings/account-form";
 import NotificationsForm from "@/components/settings/notifications-form";
 import AppearanceForm from "@/components/settings/appearance-form";
 import Link from "next/link";
+import {getServerSession} from "@/lib/auth/server-auth";
 
 export const metadata = {
     title: "Settings | NextJS Template",
@@ -17,7 +17,7 @@ export const metadata = {
 };
 
 export default async function SettingsPage() {
-    const session = await auth();
+    const session = await getServerSession();
 
     // Redirect if not authenticated
     if (!session) {

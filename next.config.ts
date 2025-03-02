@@ -1,8 +1,8 @@
+// src/next.config.ts
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
     reactStrictMode: true,
-    swcMinify: true,
     images: {
         remotePatterns: [
             {
@@ -14,8 +14,30 @@ const nextConfig: NextConfig = {
             },
         ],
     },
-    output: "standalone", // For Docker deployment
-    poweredByHeader: false, // Remove X-Powered-By header
+    output: "standalone",
+    poweredByHeader: false,
+    webpack: (config, { isServer }) => {
+        // These Node.js modules are needed only server-side
+        if (!isServer) {
+            config.resolve.fallback = {
+                ...config.resolve.fallback,
+                fs: false,
+                net: false,
+                tls: false,
+                crypto: false,
+                child_process: false,
+                async_hooks: false,
+                util: false,
+                os: false,
+                http: false,
+                https: false,
+                zlib: false,
+                stream: false,
+                path: false,
+            };
+        }
+        return config;
+    },
     headers: async () => {
         return [
             {

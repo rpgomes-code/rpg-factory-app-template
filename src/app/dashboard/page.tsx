@@ -2,9 +2,9 @@ import { MainLayout } from "@/components/layouts/main-layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { FadeIn, SlideIn } from "@/components/ui/motion";
-import { auth } from "@/lib/auth/auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import {getServerSession} from "@/lib/auth/server-auth";
 
 export const metadata = {
     title: "Dashboard | NextJS Template",
@@ -12,7 +12,7 @@ export const metadata = {
 };
 
 export default async function DashboardPage() {
-    const session = await auth();
+    const session = await getServerSession();
 
     // Redirect if not authenticated
     if (!session) {

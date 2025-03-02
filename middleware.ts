@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth/auth";
+import {getServerSession} from "@/lib/auth/server-auth";
 
 export default async function middleware(request: NextRequest) {
-    const session = await auth();
+    const session = await getServerSession();
 
     // Define protected routes
     const protectedRoutes = ["/dashboard", "/settings", "/profile"];

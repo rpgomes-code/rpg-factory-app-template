@@ -1,32 +1,36 @@
-// src/lib/auth/auth.config.ts
-import type { NextAuthConfig } from "next-auth";
-import Credentials from "next-auth/providers/credentials";
+import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@/lib/db";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { compare } from "bcrypt";
 
-export const authConfig: NextAuthConfig = {
+// This file runs ONLY on the server
+export const auth = NextAuth({
     adapter: PrismaAdapter(db),
+    session: { strategy: "jwt" },
     providers: [
-        Credentials({
+        CredentialsProvider({
             name: "credentials",
             credentials: {
                 email: { label: "Email", type: "email" },
                 password: { label: "Password", type: "password" },
             },
             async authorize(credentials) {
-                // Don't validate credentials here, we already did in the API
-                // Just fetch the user
-                if (!credentials?.email) {
+                if (!credentials?.email || !credentials?.password) {
                     return null;
                 }
 
                 const user = await db.user.findUnique({
-                    where: {
-                        email: credentials.email,
-                    },
+                    where: { email: credentials.email },
                 });
 
-                if (!user) {
+                if (!user || !user.password) {
+                    return null;
+                }
+
+                const passwordValid = await compare(credentials.password as string, user.password as string);
+
+                if (!passwordValid) {
                     return null;
                 }
 
@@ -37,35 +41,32 @@ export const authConfig: NextAuthConfig = {
                 };
             },
         }),
-        // Other providers...
-        // Add more providers here as necessary
-        // GoogleProvider({
-        //   clientId: process.env.GOOGLE_CLIENT_ID,
-        //   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        // }),
+        // Add other providers here
     ],
-    session: {
-        strategy: "jwt",
-    },
     pages: {
         signIn: "/auth/signin",
         signOut: "/auth/signout",
         error: "/auth/error",
-        verifyRequest: "/auth/verify-request",
-        newUser: "/auth/new-user",
     },
     callbacks: {
-        async session({ session, token }) {
+        session({ session, token }) {
             if (token && session.user) {
                 session.user.id = token.sub!;
             }
             return session;
         },
-        async jwt({ token, user }) {
+        jwt({ token, user }) {
             if (user) {
                 token.sub = user.id;
             }
             return token;
-        }
+        },
     },
-};
+});
+
+export const {
+    handlers: { GET, POST },
+    auth: getServerSession,
+    signIn,
+    signOut,
+} = auth;

@@ -1,3 +1,10 @@
-import { GET, POST } from "@/lib/auth/auth";
+import { NextRequest } from "next/server";
+import { auth } from "@/lib/auth/server-auth";
 
-export { GET, POST };
+export async function GET(request: NextRequest) {
+    return await auth.handleRequest(request);
+}
+
+export async function POST(request: NextRequest) {
+    return await auth.handleRequest(request);
+}

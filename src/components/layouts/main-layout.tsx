@@ -1,15 +1,17 @@
 import React from "react";
 import { Header } from "@/components/common/header";
 import Footer from "@/components/common/footer";
-import { auth } from "@/lib/auth/auth";
+import { getServerSession } from "@/lib/auth/server-auth";
 import { PageTransition } from "@/components/ui/motion";
 
 interface MainLayoutProps {
     children: React.ReactNode;
 }
 
+
+
 export async function MainLayout({ children }: MainLayoutProps) {
-    const session = await auth();
+    const session = await getServerSession();
 
     return (
         <div className="flex min-h-screen flex-col">

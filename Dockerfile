@@ -4,10 +4,11 @@ FROM node:18-alpine AS base
 FROM base AS deps
 WORKDIR /app
 
-# Install Prisma client for database access
+# Install build essentials for bcrypt and other native modules
+RUN apk add --no-cache python3 make g++
 RUN npm install -g prisma --legacy-peer-deps
 
-# Install dependencies based on the preferred package manager
+# Install dependencies
 COPY package.json package-lock.json* ./
 RUN npm ci --legacy-peer-deps
 
@@ -30,6 +31,9 @@ ENV NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
 # Generate Prisma client
 RUN npx prisma generate
 
+# For the build, we need to explicitly set the NODE_ENV
+ENV NODE_ENV=production
+
 # Build the application
 RUN npm run build
 
@@ -39,7 +43,7 @@ WORKDIR /app
 
 ENV NODE_ENV production
 
-# Create a non-root user and give it permission to the app directory
+# Create a non-root user
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 RUN chown -R nextjs:nodejs /app
@@ -53,18 +57,18 @@ COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 
-# Copy additional configuration files
+# Copy config files
 COPY --from=builder /app/next.config.js ./next.config.js
 COPY --from=builder /app/.env.production ./.env.production
 
-# Set up environment variables for running
+# Set up environment variables
 ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
 
-# Generate Prisma client in production
+# Generate Prisma client again for the runtime environment
 RUN npx prisma generate
 
-# Expose the port the app will run on
+# Expose the port
 EXPOSE 3000
 
 # Start the application
