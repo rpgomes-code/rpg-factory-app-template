@@ -1,9 +1,9 @@
 // src/lib/auth/auth.config.ts
+import * as bcrypt from 'bcryptjs'; // Changed from 'bcrypt'
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@/lib/db";
-import {verifyPassword} from "@/lib/auth/server-utils";
 
 export const authConfig: NextAuthConfig = {
     adapter: PrismaAdapter(db),
@@ -29,7 +29,10 @@ export const authConfig: NextAuthConfig = {
                     return null;
                 }
 
-                const passwordValid = await verifyPassword(credentials.password.toString(), user.password);
+                const passwordValid = await bcrypt.compare(
+                    credentials.password.toString(),
+                    user.password
+                );
 
                 if (!passwordValid) {
                     return null;
