@@ -21,7 +21,7 @@ export const authConfig: NextAuthConfig = {
 
                 const user = await db.user.findUnique({
                     where: {
-                        email: credentials.email,
+                        email: credentials.email.toString(),
                     },
                 });
 

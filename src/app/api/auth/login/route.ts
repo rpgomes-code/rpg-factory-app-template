@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { compare } from "bcrypt";
+import { compare } from "bcryptjs";
 
 export async function POST(request: NextRequest) {
     try {
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Return success (the actual sign in happens on the client)
+        // Return success (the actual sign-in happens on the client)
         return NextResponse.json(
             { message: "Authentication successful" },
             { status: 200 }
