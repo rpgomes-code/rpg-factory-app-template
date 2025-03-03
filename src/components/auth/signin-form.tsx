@@ -1,29 +1,39 @@
+// src/components/auth/signin-form.tsx
 "use client";
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signIn } from "@/lib/auth/client-auth";
+import { signIn } from "next-auth/react";
+import { useForm, FormProvider } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { FormLabel as Label } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Scale } from "@/components/ui/motion";
 
+type SignInFormValues = {
+    email: string;
+    password: string;
+};
+
 export default function SignInForm() {
     const [isLoading, setIsLoading] = useState(false);
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
     const router = useRouter();
     const { toast } = useToast();
+    const methods = useForm<SignInFormValues>({
+        defaultValues: {
+            email: "",
+            password: "",
+        },
+    });
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const onSubmit = async (data: SignInFormValues) => {
         setIsLoading(true);
 
         try {
             const result = await signIn("credentials", {
-                email,
-                password,
+                email: data.email,
+                password: data.password,
                 redirect: false,
             });
 
@@ -52,8 +62,8 @@ export default function SignInForm() {
 
     return (
         <Scale>
-            <div className="grid gap-6">
-                <form onSubmit={handleSubmit}>
+            <FormProvider {...methods}>
+                <form onSubmit={methods.handleSubmit(onSubmit)} className="grid gap-6">
                     <div className="grid gap-4">
                         <div className="grid gap-2">
                             <Label htmlFor="email">Email</Label>
@@ -65,9 +75,7 @@ export default function SignInForm() {
                                 autoComplete="email"
                                 autoCorrect="off"
                                 disabled={isLoading}
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
+                                {...methods.register("email", { required: true })}
                             />
                         </div>
                         <div className="grid gap-2">
@@ -88,9 +96,7 @@ export default function SignInForm() {
                                 placeholder="••••••••"
                                 autoComplete="current-password"
                                 disabled={isLoading}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
+                                {...methods.register("password", { required: true })}
                             />
                         </div>
                         <Button type="submit" disabled={isLoading} className="mt-2">
@@ -98,35 +104,7 @@ export default function SignInForm() {
                         </Button>
                     </div>
                 </form>
-                <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                        <span className="w-full border-t" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
-              Or continue with
-            </span>
-                    </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                    <Button
-                        variant="outline"
-                        type="button"
-                        disabled={isLoading}
-                        onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-                    >
-                        Google
-                    </Button>
-                    <Button
-                        variant="outline"
-                        type="button"
-                        disabled={isLoading}
-                        onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
-                    >
-                        GitHub
-                    </Button>
-                </div>
-            </div>
+            </FormProvider>
         </Scale>
     );
 }

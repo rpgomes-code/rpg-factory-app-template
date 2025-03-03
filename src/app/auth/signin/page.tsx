@@ -1,6 +1,9 @@
+// src/app/auth/signin/page.tsx
 import SignInForm from "@/components/auth/signin-form";
 import { PageTransition } from "@/components/ui/motion";
 import Link from "next/link";
+
+export const dynamic = 'force-dynamic'; // Disable static generation for this page
 
 export const metadata = {
     title: "Sign In",
